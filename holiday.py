@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import time
+
 """
 判断是否节假日
 2018.8.23
@@ -19,6 +20,7 @@ class Holiday:
         self.weekday = int(time.strftime("%w", time.localtime()))
 
         self.holiday_arr = []
+        self.add_arr = []  # 补假 20180926
 
         self.__genHoliday(self.year)
 
@@ -34,7 +36,10 @@ class Holiday:
                 if line[0] == '#':  # 过滤注释掉的卡号
                     continue
 
-                day_arr.append(line.split('#')[0].strip())  # 过滤注释
+                if line[:3] == 'add':  # 补假
+                    self.add_arr += (line[4:].split(','))
+                else:
+                    day_arr.append(line.split('#')[0].strip())  # 过滤注释
 
             return day_arr
 
@@ -93,13 +98,13 @@ class Holiday:
         if cur_month_day in self.holiday_arr:
             return True
         else:
-
-            if self.weekday == 0 or self.weekday == 6:
-                # 周末
+            if cur_month_day not in self.add_arr and (self.weekday == 0 or self.weekday == 6):
+                # 没有补假并且是周末
                 return True
         return False
 
 
 if __name__ == "__main__":
+ 
     h = Holiday()
     print(h.isHoliday())
